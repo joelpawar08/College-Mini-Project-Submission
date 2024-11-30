@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Location Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([19.0760, 72.8777], 13);  // Default center (Mumbai)
+
+        // Tile layer for the map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Function to draw a circle on the map at the given coordinates
+        function drawCircle(lat, lng) {
+            var circle = L.circle([lat, lng], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: 100  // Adjust radius size as per your requirements
+            }).addTo(map);
+        }
+
+        // Fetch location updates from the Flask server
+        async function fetchLocation() {
+            const response = await fetch('https://your-app-name.onrender.com/trigger');  // Use your deployed URL from Render or Vercel
+            const data = await response.json();
+            if (data.status === 'success') {
+                drawCircle(data.latitude, data.longitude);  // Draw the circle at new location
+            }
+        }
+
+        // Interval to check for location updates every second (adjust as necessary)
+        setInterval(fetchLocation, 1000);
+    </script>
+</body>
+</html>
